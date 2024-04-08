@@ -32,6 +32,10 @@ func init() {
 	}
 }
 
+//Calculate BMI
+// BMI = 67 ÷ (1.74 x 1.74)
+// BMI = 22.13
+
 func main() {
 	//prepare database
 	dbHost := os.Getenv("DATABASE_HOST")

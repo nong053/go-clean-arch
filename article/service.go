@@ -2,6 +2,7 @@ package article
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -16,6 +17,7 @@ import (
 type ArticleRepository interface {
 	Fetch(ctx context.Context, cursor string, num int64) (res []domain.Article, nextCursor string, err error)
 	GetByID(ctx context.Context, id int64) (domain.Article, error)
+	GetBMI(ctx context.Context, height float64, weight float64) (float64, error)
 	GetByTitle(ctx context.Context, title string) (domain.Article, error)
 	Update(ctx context.Context, ar *domain.Article) error
 	Store(ctx context.Context, a *domain.Article) error
@@ -123,6 +125,16 @@ func (a *Service) GetByID(ctx context.Context, id int64) (res domain.Article, er
 	}
 	res.Author = resAuthor
 	return
+}
+func (a *Service) GetBMI(ctx context.Context, height float64, weight float64) (res float64, err error) {
+	//BMI = 67 ÷ (1.74 x 1.74)
+
+	heightP := (height / 100)
+	log.Printf("height =%f,= weight %f heightP=%f", height, weight, heightP)
+	bmi := weight / (heightP * heightP)
+	log.Printf("bmi= %f", bmi)
+
+	return bmi, nil
 }
 
 func (a *Service) Update(ctx context.Context, ar *domain.Article) (err error) {

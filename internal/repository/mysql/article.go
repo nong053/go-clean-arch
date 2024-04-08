@@ -97,6 +97,10 @@ func (m *ArticleRepository) GetByID(ctx context.Context, id int64) (res domain.A
 
 	return
 }
+func (m *ArticleRepository) GetBMI(ctx context.Context, height float64, weight float64) (res float64, err error) {
+
+	return -1.00, nil
+}
 
 func (m *ArticleRepository) GetByTitle(ctx context.Context, title string) (res domain.Article, err error) {
 	query := `SELECT id,title,content, author_id, updated_at, created_at

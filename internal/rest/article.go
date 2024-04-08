@@ -23,6 +23,7 @@ type ResponseError struct {
 type ArticleService interface {
 	Fetch(ctx context.Context, cursor string, num int64) ([]domain.Article, string, error)
 	GetByID(ctx context.Context, id int64) (domain.Article, error)
+	GetBMI(ctx context.Context, height float64, weight float64) (float64, error)
 	Update(ctx context.Context, ar *domain.Article) error
 	GetByTitle(ctx context.Context, title string) (domain.Article, error)
 	Store(context.Context, *domain.Article) error
@@ -44,6 +45,7 @@ func NewArticleHandler(e *echo.Echo, svc ArticleService) {
 	e.GET("/articles", handler.FetchArticle)
 	e.POST("/articles", handler.Store)
 	e.GET("/articles/:id", handler.GetByID)
+	e.GET("/bmi/:height/:weight", handler.GetBMI)
 	e.DELETE("/articles/:id", handler.Delete)
 }
 
@@ -84,6 +86,27 @@ func (a *ArticleHandler) GetByID(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, art)
+}
+func (a *ArticleHandler) GetBMI(c echo.Context) error {
+	heightP, err := strconv.Atoi(c.Param("height"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+	weightP, err := strconv.Atoi(c.Param("weight"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	height := float64(heightP)
+	weight := float64(weightP)
+	ctx := c.Request().Context()
+
+	resultBMI, err := a.Service.GetBMI(ctx, height, weight)
+	if err != nil {
+		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, resultBMI)
 }
 
 func isRequestValid(m *domain.Article) (bool, error) {
